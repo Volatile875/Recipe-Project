@@ -22,7 +22,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
 from myapp.views import delete_recepie
-
+from myapp.views import update_recepie
 
 
 urlpatterns = [
@@ -30,10 +30,11 @@ urlpatterns = [
     path('', lag, name='lag'),
     path('first/', first, name='first'),
     path('delete-recepie/<int:id>/', delete_recepie , name='delete-recepie'),
+    path('update-recepie/<int:id>/', update_recepie , name='update-recepie'),
+    path('admin/', admin.site.urls),
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL,
                     document_root=settings.MEDIA_ROOT)
-
 

@@ -25,6 +25,12 @@ def lag(request):
     context = {'recepies': queryset}
     return render(request, 'lag.html', context)
 
+def update_recepie(request, id):
+    queryset = get_object_or_404(Recepie, id=id)
+    context = {'recepie': queryset}
+
+    return render(request,'lag.html', context)
+
 def delete_recepie(request, id):
     recepie = get_object_or_404(Recepie, id=id)
     recepie.delete()
