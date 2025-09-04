@@ -367,6 +367,11 @@
                 </div>
                 <div class="form-group file-input-wrapper">
                     <label for="recepie_image" class="file-input-label">📷 Choose Image</label>
+                    {% if recepie.recepie_image %}
+                        <img src="{{ recepie.recepie_image.url }}" alt="Recipe" class="recipe-image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x200?text=No+Image" alt="No Image" class="recipe-image">
+                    {% endif %}
                     <input type="file" id="recepie_image" name="recepie_image" accept="image/*">
                 </div>
                 <button type="submit" class="submit-btn">Add Recipe</button>
@@ -385,12 +390,18 @@
             <div class="recipes-grid">
                 {% for recepie in recepies %}
                 <div class="recipe-card fade-in">
-                    <img src="{{ recepie.recepie_image.url }}" alt="Recipe" class="recipe-image">
+                    {% if recepie.recepie_image %}
+                        <img src="{{ recepie.recepie_image.url }}" alt="Recipe" class="recipe-image">
+                    {% else %}
+                        <img src="https://via.placeholder.com/400x200?text=No+Image" alt="No Image" class="recipe-image">
+                    {% endif %}
+
                     <h3 class="recipe-title">{{ recepie.recepie_name }}</h3>
                     <p class="recipe-description">{{ recepie.recepie_description }}</p>
                     <div class="recipe-actions">
                         <span class="recipe-number">#{{ forloop.counter }}</span>
                         <a href="{% url 'delete-recepie' recepie.id %}" class="delete-btn">🗑️ Delete</a>
+                        <a href="{% url 'update-recepie' recepie.id %}" class="update-btn">✏️ Edit</a>
                     </div>
                 </div>                
                 {% empty %}
