@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Recipe Manager{% endblock %}
+
+{% block extra_css %}
+<style>
+    .register-container {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .register-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        width: 100%;
+        max-width: 450px;
+    }
+    
+    .register-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+    
+    .register-header h2 {
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+    
+    .register-header p {
+        color: #666;
+        font-size: 0.9rem;
+    }
+    
+    .form-control {
+        border-radius: 10px;
+        border: 2px solid #e9ecef;
+        padding: 12px 15px;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        transform: translateY(-2px);
+    }
+    
+    .btn-register {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        border: none;
+        padding: 12px 30px;
+        border-radius: 25px;
+        font-weight: bold;
+        color: white;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 30px rgba(40, 167, 69, 0.4);
+        color: white;
+    }
+    
+    .form-check-input:checked {
+        background-color: #28a745;
+        border-color: #28a745;
+    }
+    
+    .login-link {
+        text-align: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    .login-link a {
+        color: #667eea;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    
+    .login-link a:hover {
+        color: #764ba2;
+    }
+    
+    .password-strength {
+        margin-top: 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .strength-weak {
+        color: #dc3545;
+    }
+    
+    .strength-medium {
+        color: #ffc107;
+    }
+    
+    .strength-strong {
+        color: #28a745;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="register-container">
+        <div class="register-card">
+            <div class="register-header">
+                <i class="fas fa-user-plus fa-4x text-success mb-3"></i>
+                <h2>Create Account</h2>
+                <p>Join us and start managing your recipes</p>
+            </div>
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                <!-- Display any error messages -->
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>{{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                
+                <div class="row">
+                    <div class="mb-3 col-md-6">
+                        <label for="first_name" class="form-label">
+                            <i class="fas fa-user me-1"></i>First name
+                        </label>
+                        <input type="text" class="form-control" id="first_name" name="first_name" placeholder="Your first name">
+                    </div>
+                    <div class="mb-3 col-md-6">
+                        <label for="last_name" class="form-label">
+                            <i class="fas fa-user me-1"></i>Last name
+                        </label>
+                        <input type="text" class="form-control" id="last_name" name="last_name" placeholder="Your last name">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user me-1"></i>Username
+                    </label>
+                    <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
+                    <div class="form-text">
+                        <i class="fas fa-info-circle me-1"></i>Choose a unique username for your account
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="email" class="form-label">
+                        <i class="fas fa-envelope me-1"></i>Email Address
+                    </label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter your email" required>
+                    <div class="form-text">
+                        <i class="fas fa-shield-alt me-1"></i>We'll never share your email with anyone else
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock me-1"></i>Password
+                    </label>
+                    <input type="password" class="form-control" id="password" name="password" placeholder="Create a strong password" required>
+                    <div id="passwordStrength" class="password-strength"></div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">
+                        <i class="fas fa-lock me-1"></i>Confirm Password
+                    </label>
+                    <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required>
+                    <div id="passwordMatch" class="form-text"></div>
+                </div>
+                
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="agreeTerms" required>
+                    <label class="form-check-label" for="agreeTerms">
+                        I agree to the <a href="#" class="text-decoration-none">Terms of Service</a> and <a href="#" class="text-decoration-none">Privacy Policy</a>
+                    </label>
+                </div>
+                
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </button>
+            </form>
+            
+            <div class="login-link">
+                <p class="mb-0">Already have an account? <a href="/login/">Sign In</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Password strength checker
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const strengthDiv = document.getElementById('passwordStrength');
+        
+        let strength = 0;
+        if (password.length >= 8) strength++;
+        if (/[a-z]/.test(password)) strength++;
+        if (/[A-Z]/.test(password)) strength++;
+        if (/[0-9]/.test(password)) strength++;
+        if (/[^A-Za-z0-9]/.test(password)) strength++;
+        
+        if (password.length === 0) {
+            strengthDiv.innerHTML = '';
+        } else if (strength < 3) {
+            strengthDiv.innerHTML = '<i class="fas fa-times-circle me-1 strength-weak"></i>Weak password';
+            strengthDiv.className = 'password-strength strength-weak';
+        } else if (strength < 4) {
+            strengthDiv.innerHTML = '<i class="fas fa-exclamation-circle me-1 strength-medium"></i>Medium strength';
+            strengthDiv.className = 'password-strength strength-medium';
+        } else {
+            strengthDiv.innerHTML = '<i class="fas fa-check-circle me-1 strength-strong"></i>Strong password';
+            strengthDiv.className = 'password-strength strength-strong';
+        }
+
+
+    });    
+</script> 
+{% endblock %}
