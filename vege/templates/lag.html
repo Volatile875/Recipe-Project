@@ -1,378 +1,405 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe Manager - Classic GUI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-{% block title %}Recipe Manager - Home{% endblock %}
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            animation: backgroundShift 10s ease-in-out infinite;
+        }
 
-{% block extra_css %}
-<style>
-    /* site container to center main content */
-    .site-container {
-        max-width: 1100px;
-        margin: 0 auto;
-        background: rgba(255,255,255,0.08);
-        border-radius: 20px;
-        padding: 2.5rem;
-        box-shadow: 0 30px 60px rgba(0,0,0,0.12);
-    }
+        @keyframes backgroundShift {
+            0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+            50% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
+        }
 
-    /* make the inner white card stand out */
-    .inner-card {
-        background: rgba(255,255,255,0.95);
-        border-radius: 16px;
-        padding: 2rem;
-    }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            animation: fadeIn 1s ease-out;
+        }
 
-    .hero-section {
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 3rem;
-        text-align: center;
-        margin-bottom: 3rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .hero-section h1 {
-        color: white;
-        font-size: 3rem;
-        margin-bottom: 1rem;
-        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-    }
-    
-    .hero-section p {
-        color: rgba(255, 255, 255, 0.9);
-        font-size: 1.2rem;
-    }
-    
-    .recipe-form-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 3rem;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .form-control {
-        border-radius: 10px;
-        border: 2px solid #e9ecef;
-        padding: 12px 15px;
-        transition: all 0.3s ease;
-    }
-    
-    .form-control:focus {
-        border-color: #667eea;
-        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-        transform: translateY(-2px);
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border: none;
-        padding: 12px 30px;
-        border-radius: 25px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-    }
-    
-    .search-section {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 3rem;
-        text-align: center;
-    }
-    
-    .recipes-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-        gap: 2rem;
-        margin-top: 2rem;
-    }
-    
-    .recipe-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(10px);
-        border-radius: 15px;
-        overflow: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    }
-    
-    .recipe-card:hover {
-        transform: translateY(-10px);
-        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-    }
-    
-    .recipe-image {
-        width: 100%;
-        height: 200px;
-        object-fit: cover;
-    }
-    
-    .recipe-content {
-        padding: 1.5rem;
-    }
-    
-    .recipe-title {
-        color: #333;
-        font-size: 1.3rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-    }
-    
-    .recipe-description {
-        color: #666;
-        font-size: 0.9rem;
-        margin-bottom: 1rem;
-        line-height: 1.5;
-    }
-    
-    .recipe-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .recipe-number {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 5px 12px;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-    
-    .action-btn {
-        padding: 5px 12px;
-        border-radius: 15px;
-        text-decoration: none;
-        font-size: 0.8rem;
-        transition: all 0.3s ease;
-    }
-    
-    .delete-btn {
-        background: #dc3545;
-        color: white;
-    }
-    
-    .update-btn {
-        background: #28a745;
-        color: white;
-    }
-    
-    .action-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        text-decoration: none;
-        color: white;
-    }
-    
-    .file-upload-area {
-        border: 2px dashed #667eea;
-        border-radius: 10px;
-        padding: 2rem;
-        text-align: center;
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-    
-    .file-upload-area:hover {
-        background: rgba(102, 126, 234, 0.1);
-        border-color: #764ba2;
-    }
-    
-    .loading {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        text-align: center;
-        z-index: 1000;
-    }
-    
-    .spinner {
-        border: 4px solid rgba(255, 255, 255, 0.3);
-        border-radius: 50%;
-        border-top: 4px solid white;
-        width: 40px;
-        height: 40px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto 1rem;
-    }
-    
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-    
-    .fade-in {
-        animation: fadeIn 0.5s ease-in;
-    }
-    
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-</style>
-{% endblock %}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-{% block content %}
-<div class="container site-container">
-    <!-- Hero Section -->
-    <div class="hero-section">
-        <h1><i class="fas fa-utensils me-3"></i>Recipe Manager</h1>
-        <p>Create and manage your delicious recipes</p>
-    </div>
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 0.8s ease-out;
+        }
 
-    <!-- Add Recipe Form -->
-    <div class="inner-card">
-    <div class="recipe-form-card">
-        <h2 class="text-center mb-4"><i class="fas fa-plus-circle me-2"></i>Add New Recipe</h2>
-        <form method="POST" enctype="multipart/form-data" id="recipeForm">
-            {% csrf_token %}
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="recepie_name" class="form-label">
-                        <i class="fas fa-utensils me-1"></i>Recipe Name
-                    </label>
-                    <input type="text" class="form-control" id="recepie_name" name="recepie_name" placeholder="Enter recipe name" required>
-                </div>
-                
-                <div class="col-md-6 mb-3">
-                    <label for="recepie_image" class="form-label">
-                        <i class="fas fa-camera me-1"></i>Recipe Image
-                    </label>
-                    <input type="file" class="form-control" id="recepie_image" name="recepie_image" accept="image/*">
-                </div>
-            </div>
+        @keyframes slideDown {
+            from { transform: translateY(-50); opacity: 1; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2em;
+        }
+
+        .recipe-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transform: translateY(20px);
+            opacity: 0;
+            animation: slideUp 1s ease-out 0.1s forwards;
+        }
+
+        @keyframes slideUp {
+            to {
+                transform: translateY(1);
+                opacity: 1;
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 12px 15px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: linear-gradient(45deg, #f8f9ff, #e8ebff);
+        }
+
+        .file-input-label:hover {
+            border-color: #5a67d8;
+            background: linear-gradient(45deg, #e8ebff, #d6dbff);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .recipes-section {
+            animation: slideUp 1s ease-out 0.6s both;
+        }
+
+        .recipes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .recipe-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s;
+        }
+
+        .recipe-card:hover::before {
+            left: 100%;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.2);
+        }
+
+        .recipe-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .recipe-card:hover .recipe-image {
+            transform: scale(1.05);
+        }
+
+        .recipe-title {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .recipe-card:hover .recipe-title {
+            color: #667eea;
+        }
+
+        .recipe-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .recipe-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .delete-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a5a);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .delete-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+
+        .recipe-number {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .fade-in {
+            animation: fadeInItem 0.6s ease-out forwards;
+        }
+
+        @keyframes fadeInItem {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .section-title {
+            color: white;
+            font-size: 2.5em;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
             
-            <div class="mb-3">
-                <label for="recepie_description" class="form-label">
-                    <i class="fas fa-edit me-1"></i>Description
-                </label>
-                <textarea class="form-control" id="recepie_description" name="recepie_description" rows="4" placeholder="Describe your recipe..." required></textarea>
-            </div>
+            .header h1 {
+                font-size: 2em;
+            }
             
-            <div class="text-center">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    <i class="fas fa-plus me-2"></i>Add Recipe
-                </button>
-            </div>
-        </form>
-    </div>
+            .recipes-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .recipe-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🍳 Recipe Manager</h1>
+            <p>Create and manage your delicious recipes</p>
+        </div>
 
-    </div> <!-- end inner-card for form -->
-
-    <!-- Loading Spinner -->
-    <div class="loading" id="loading">
-        <div class="spinner"></div>
-        <p>Adding your recipe...</p>
-    </div>
-
-    <!-- Search Section -->
-    <div class="inner-card mt-4">
-    <div class="search-section">
-        <h3><i class="fas fa-search me-2"></i>Search Recipes</h3>
-        <form method="get" action="" class="mt-3">
-            <div class="row justify-content-center">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <input type="text" name="search" class="form-control" placeholder="Search for recipes..." value="{{ request.GET.search }}">
-                        <button class="btn btn-primary" type="submit">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
+        <div class="recipe-form">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">Add New Recipe</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="recepie_name">Name</label>
+                    <input type="text" id="recepie_name" name="recepie_name" placeholder="Name" required>
                 </div>
-            </div>
-        </form>
-    </div>
-    </div>
+                <div class="form-group">
+                    <label for="recepie_description">Description</label>
+                    <textarea id="recepie_description" name="recepie_description" placeholder="Description" required></textarea>
+                </div>
+                <div class="form-group file-input-wrapper">
+                    <label for="recepie_image" class="file-input-label">📷 Choose Image</label>
+                    <input type="file" id="recepie_image" name="recepie_image" accept="image/*">
+                </div>
+                <button type="submit" class="submit-btn">Add Recipe</button>
+            </form>
 
-    <!-- Recipes Section -->
-    <div class="inner-card mt-4">
-    <div class="recipes-section">
-        <h2 class="text-center text-white mb-4">
-            
-            <i class="fas fa-book me-2"></i>Your Recipes
-        </h2>
-        
-        <div class="recipes-grid">
-            {% for recepie in recepies %}
-            <div class="recipe-card fade-in">
-                {% if recepie.recepie_image %}
-                    <img src="{{ recepie.recepie_image.url }}" alt="{{ recepie.recepie_name }}" class="recipe-image">
-                {% else %}
-                    <div class="recipe-image d-flex align-items-center justify-content-center" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                        <i class="fas fa-utensils fa-3x text-white"></i>
-                    </div>
-                {% endif %}
-                
-                <div class="recipe-content">
+
+        </div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p style="margin-top: 15px; color: white;">Adding your recipe...</p>
+        </div>
+
+        <div class="recipes-section">
+            <h2 class="section-title">Your Recipes</h2>
+            <div class="recipes-grid">
+                {% for recepie in recepies %}
+                <div class="recipe-card fade-in">
+                    <img src="{{ recepie.recepie_image.url }}" alt="Recipe" class="recipe-image">
                     <h3 class="recipe-title">{{ recepie.recepie_name }}</h3>
-                    <p class="recipe-description">{{ recepie.recepie_description|truncatewords:15 }}</p>
-                    
+                    <p class="recipe-description">{{ recepie.recepie_description }}</p>
                     <div class="recipe-actions">
                         <span class="recipe-number">#{{ forloop.counter }}</span>
-                        <div>
-                            <a href="{% url 'update-recepie' recepie.id %}" class="action-btn update-btn me-2">
-                                <i class="fas fa-edit"></i> Edit
-                            </a>
-                            <a href="{% url 'delete-recepie' recepie.id %}" class="action-btn delete-btn" onclick="return confirm('Are you sure you want to delete this recipe?')">
-                                <i class="fas fa-trash"></i> Delete
-                            </a>
-                        </div>
+                        <a href="{% url 'delete-recepie' recepie.id %}" class="delete-btn">🗑️ Delete</a>
                     </div>
-                </div>
+                </div>                
+                {% empty %}
+                <p style="color: #666; text-align: center;">No recipes yet. Add your first recipe above!</p>
+                {% endfor %}
             </div>
-            {% empty %}
-            <div class="col-12 text-center">
-                <div class="recipe-form-card">
-                    <i class="fas fa-utensils fa-4x text-muted mb-3"></i>
-                    <h4 class="text-muted">No recipes yet!</h4>
-                    <p class="text-muted">Add your first recipe using the form above.</p>
-                </div>
-            </div>
-            {% endfor %}
         </div>
     </div>
-    </div>
-</div>
-{% endblock %}
 
-{% block extra_js %}
-<script>
-    // Show loading spinner on form submit
-    document.getElementById('recipeForm').addEventListener('submit', function() {
-        document.getElementById('loading').style.display = 'block';
-    });
-    
-    // Add fade-in animation to recipe cards
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
-        });
-    });
-    
-    document.querySelectorAll('.recipe-card').forEach((card) => {
-        card.style.opacity = '0';
-        card.style.transform = 'translateY(20px)';
-        card.style.transition = 'all 0.5s ease';
-        observer.observe(card);
-    });
-</script>
-{% endblock %}
+    <!-- No custom JS needed for Django backend version -->
+</body>
+</html>
