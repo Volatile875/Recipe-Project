@@ -1,12 +1,11 @@
 from django.shortcuts import render,redirect, get_object_or_404
-from django.http import HttpResponse
-from .models import *
+from .models import Recepie
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
-
-
+@login_required(login_url='/login/')
 def lag(request):
     if request.method == 'POST':
         recepie_image = request.FILES.get('recepie_image')
@@ -18,7 +17,7 @@ def lag(request):
             recepie_name=recepie_name,
             recepie_description=recepie_description,
         )
-        return redirect('/lag/')  # Use the URL pattern name
+        return redirect('lag')  # use the named URL
 
     
     queryset = Recepie.objects.all()
@@ -29,12 +28,15 @@ def lag(request):
     context = {'recepies': queryset}
     return render(request, 'lag.html', context)
 
+
+@login_required(login_url='/login/')
 def update_recepie(request, id):
     queryset = get_object_or_404(Recepie, id=id)
     context = {'recepie': queryset}
 
     return render(request,'lag.html', context)
 
+@login_required(login_url='/login/')
 def delete_recepie(request, id):
     recepie = get_object_or_404(Recepie, id=id)
     recepie.delete()
@@ -51,9 +53,11 @@ def login_page(request):
             messages.error(request, 'Invalid username or password')
             return redirect('login_page')
 
+        # If authentication succeeded, log the user in and redirect
         login(request, user)
-        return redirect('/lag/')
+        return redirect('lag')
 
+    # For GET (and other methods) render the login form
     return render(request, 'login.html')
 
 def register_view(request):

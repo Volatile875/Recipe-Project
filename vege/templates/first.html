@@ -2,19 +2,19 @@
 
 <div class="container mt-5">
 
-<form>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
   <div class="mb-3">
-    <label for="exampleInputEmail1" class="form-label">Recepie name</label>
-    <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
-  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+    <label for="recepie_name" class="form-label">Recipe name</label>
+    <input type="text" class="form-control" id="recepie_name" name="recepie_name" placeholder="Enter recipe name">
   </div>
   <div class="mb-3">
-    <label for="exampleInputPassword1" class="form-label">recepie description</label>
-    <input type="password" class="form-control" id="exampleInputPassword1">
+    <label for="recepie_description" class="form-label">Recipe description</label>
+    <textarea class="form-control" id="recepie_description" name="recepie_description" rows="4" placeholder="Describe the recipe"></textarea>
   </div>
-  <div class="mb-3 form-check">
-    <input type="checkbox" class="form-check-input" id="exampleCheck1">
-    <label class="form-check-label" for="exampleCheck1">Recepie Image</label>
+  <div class="mb-3">
+    <label for="recepie_image" class="form-label">Recipe Image</label>
+    <input type="file" class="form-control" id="recepie_image" name="recepie_image">
   </div>
   <button type="submit" class="btn btn-primary">Submit</button>
 </form>
