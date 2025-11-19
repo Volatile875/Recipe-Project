@@ -5,13 +5,9 @@
 }
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    /* Let the Django base template control the page background so it stays calm and consistent */
+    background: transparent;
     min-height: 100vh;
-    animation: backgroundShift 10s ease-in-out infinite;
-}
-@keyframes backgroundShift {
-    0%, 100% { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-    50% { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
 }
 .container {
     max-width: 1200px;

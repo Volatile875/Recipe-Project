@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Recipe{% endblock %}
+
+{% block content %}
+<div class="container site-container mt-4">
+    <div class="inner-card">
+        <div class="recipe-form-card">
+            <h2 class="text-center mb-4"><i class="fas fa-edit me-2"></i>Edit Recipe</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="recepie_name" class="form-label">
+                            <i class="fas fa-utensils me-1"></i>Recipe Name
+                        </label>
+                        <input type="text" class="form-control" id="recepie_name" name="recepie_name" value="{{ recepie.recepie_name }}" required>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="recepie_image" class="form-label">
+                            <i class="fas fa-camera me-1"></i>Recipe Image
+                        </label>
+                        {% if recepie.recepie_image %}
+                            <div class="mb-2">
+                                <img src="{{ recepie.recepie_image.url }}" alt="{{ recepie.recepie_name }}" class="img-fluid rounded" style="max-height: 150px;">
+                            </div>
+                            <small class="text-muted d-block mb-2">Upload a new image to replace the existing one (optional).</small>
+                        {% endif %}
+                        <input type="file" class="form-control" id="recepie_image" name="recepie_image" accept="image/*">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="recepie_description" class="form-label">
+                        <i class="fas fa-edit me-1"></i>Description
+                    </label>
+                    <textarea class="form-control" id="recepie_description" name="recepie_description" rows="4" required>{{ recepie.recepie_description }}</textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="price" class="form-label">
+                        <i class="fas fa-rupee-sign me-1"></i>Price (₹)
+                    </label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="price" name="price" value="{{ recepie.price }}" required>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{% url 'lag' %}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i>Back
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

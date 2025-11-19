@@ -22,8 +22,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
 from django.conf.urls.static import static
 from myapp.views import delete_recepie, login_page, register_view,logout_page
-from myapp.views import update_recepie
-
+from myapp.views import update_recepie, add_to_cart, view_cart, remove_from_cart, place_order, order_list
 
 urlpatterns = [
      # This handles the root path
@@ -31,6 +30,14 @@ urlpatterns = [
     
     path('delete-recepie/<int:id>/', delete_recepie , name='delete-recepie'),
     path('update-recepie/<int:id>/', update_recepie , name='update-recepie'),
+
+    # Cart & ordering
+    path('cart/add/<int:id>/', add_to_cart, name='add-to-cart'),
+    path('cart/', view_cart, name='view-cart'),
+    path('cart/remove/<int:id>/', remove_from_cart, name='remove-from-cart'),
+    path('cart/place-order/', place_order, name='place-order'),
+    path('orders/', order_list, name='order-list'),
+
     path('admin/', admin.site.urls),
     path('login/', login_page , name='login_page'),
     path('register/', register_view, name='register'),

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}My Orders{% endblock %}
+
+{% block extra_css %}
+<style>
+    .orders-header-subtitle {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .order-card {
+        position: relative;
+        border-radius: 1.25rem;
+        border: none;
+        background: rgba(255, 255, 255, 0.96);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+    .order-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-left: 4px solid #0d6efd;
+        opacity: 0.8;
+    }
+    .order-status-pill {
+        border-radius: 999px;
+        padding: 0.25rem 0.75rem;
+        font-size: 0.75rem;
+    }
+    .order-timeline-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: #0d6efd;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.15);
+    }
+    .order-empty-state {
+        text-align: center;
+        padding: 3rem 1rem;
+    }
+    .order-empty-state i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container site-container mt-4">
+    <div class="inner-card">
+        <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+                <h2 class="mb-1">
+                    <i class="fas fa-receipt me-2 text-primary"></i>My Orders
+                </h2>
+                <p class="orders-header-subtitle mb-0">Track your recent orders and their status.</p>
+            </div>
+            {% if orders %}
+                <span class="badge bg-secondary rounded-pill align-self-center">
+                    {{ orders|length }} order{{ orders|length|pluralize }}
+                </span>
+            {% endif %}
+        </div>
+
+        {% if orders %}
+            <div class="vstack gap-3">
+                {% for order in orders %}
+                <div class="order-card p-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="order-timeline-dot"></div>
+                            <div>
+                                <div class="fw-semibold">Order #{{ order.id }}</div>
+                                <small class="text-muted">Placed on {{ order.created_at|date:"M d, Y H:i" }}</small>
+                            </div>
+                        </div>
+                        <div class="text-end">
+                            {% if order.status == "DELIVERED" %}
+                                <span class="order-status-pill bg-success text-white">
+                                    <i class="fas fa-check-circle me-1"></i>{{ order.get_status_display }}
+                                </span>
+                            {% elif order.status == "CANCELLED" %}
+                                <span class="order-status-pill bg-danger text-white">
+                                    <i class="fas fa-times-circle me-1"></i>{{ order.get_status_display }}
+                                </span>
+                            {% elif order.status == "ACCEPTED" %}
+                                <span class="order-status-pill bg-info text-white">
+                                    <i class="fas fa-bell me-1"></i>{{ order.get_status_display }}
+                                </span>
+                            {% else %}
+                                <span class="order-status-pill bg-warning text-dark">
+                                    <i class="fas fa-clock me-1"></i>{{ order.get_status_display }}
+                                </span>
+                            {% endif %}
+                            <div class="mt-1 small text-muted">Total: ₹{{ order.total_amount }}</div>
+                        </div>
+                    </div>
+
+                    <hr class="my-2">
+
+                    <ul class="list-unstyled mb-2 small">
+                        {% for item in order.items.all %}
+                            <li class="d-flex justify-content-between py-1">
+                                <span>{{ item.quantity }} × {{ item.recepie.recepie_name }}</span>
+                                <span>₹{{ item.line_total }}</span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                    <div class="d-flex justify-content-between align-items-center small text-muted mt-1">
+                        <span>
+                            <i class="fas fa-motorcycle me-1"></i>
+                            Estimated delivery depends on restaurant.
+                        </span>
+                        <span>
+                            <i class="fas fa-shield-alt me-1"></i>Order protected
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="order-empty-state">
+                <i class="fas fa-box-open"></i>
+                <h4 class="mb-2">No orders yet</h4>
+                <p class="text-muted mb-3">When you place an order, it will show up here so you can track it.</p>
+                <a href="{% url 'lag' %}" class="btn btn-primary rounded-pill px-4">
+                    <i class="fas fa-utensils me-1"></i>Browse menu
+                </a>
+            </div>
+        {% endif %}
+
+        {% if orders %}
+        <div class="mt-3">
+            <a href="{% url 'lag' %}" class="btn btn-outline-secondary rounded-pill">
+                <i class="fas fa-arrow-left me-1"></i>Back to menu
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

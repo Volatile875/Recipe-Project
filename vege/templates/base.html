@@ -21,9 +21,11 @@
     <style>
         /* Custom styles to override any issues */
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            /* Warm, food-friendly background that also works well behind a React root */
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 40%, #f6d365 100%);
+            background-attachment: fixed;
         }
         
         .navbar {
@@ -62,15 +64,21 @@
                 <i class="fas fa-utensils me-2"></i>Recipe Manager
             </a>
             
-            <!-- Search Form -->
-            <div class="d-flex">
+            <!-- Search + Nav Actions -->
+            <div class="d-flex align-items-center">
                 <form class="d-flex me-3" role="search" method="get" action="/">
                     <input class="form-control me-2" type="search" name="search" placeholder="Search recipes..." aria-label="Search" value="{{ request.GET.search }}">
                     <button class="btn btn-outline-primary" type="submit">
                         <i class="fas fa-search"></i>
                     </button>
                 </form>
-                <a href="/logout/" class="btn btn-logout">
+                <a href="{% url 'view-cart' %}" class="btn btn-outline-primary me-2">
+                    <i class="fas fa-shopping-cart me-1"></i>Cart
+                </a>
+                <a href="{% url 'order-list' %}" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-receipt me-1"></i>My Orders
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-logout">
                     <i class="fas fa-sign-out-alt me-1"></i>Logout
                 </a>
             </div>
@@ -81,10 +89,79 @@
     <main class="py-4">
         {% block content %}
         {% endblock %}
+
+        <!-- React root: mount your React app here (e.g. ReactDOM.render in this div) -->
+        <div id="react-root"></div>
     </main>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- React and ReactDOM (UMD builds) -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+
+    <!-- Simple React widget for the recipe manager -->
+    <script>
+        (function() {
+            const e = React.createElement;
+
+            function RecipeWidget() {
+                const tips = [
+                    "Try adding a pinch of salt to sweet recipes to enhance flavor.",
+                    "Fresh herbs at the end of cooking keep flavors bright.",
+                    "Toast your spices in a dry pan to release extra aroma.",
+                ];
+
+                const [index, setIndex] = React.useState(0);
+
+                React.useEffect(() => {
+                    const id = setInterval(() => {
+                        setIndex((prev) => (prev + 1) % tips.length);
+                    }, 5000);
+                    return () => clearInterval(id);
+                }, []);
+
+                return e(
+                    'div',
+                    {
+                        className: 'react-widget shadow-sm',
+                        style: {
+                            background: 'rgba(255, 255, 255, 0.95)',
+                            borderRadius: '16px',
+                            padding: '1.5rem',
+                            maxWidth: '420px',
+                            margin: '2rem auto 0',
+                        },
+                    },
+                    [
+                        e(
+                            'h5',
+                            { key: 'title', className: 'mb-2' },
+                            'Chef\'s Tip'
+                        ),
+                        e(
+                            'p',
+                            { key: 'tip', className: 'mb-1 text-muted' },
+                            tips[index]
+                        ),
+                        e(
+                            'small',
+                            { key: 'hint', className: 'text-muted' },
+                            'Powered by React'
+                        ),
+                    ]
+                );
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                const rootEl = document.getElementById('react-root');
+                if (!rootEl || typeof ReactDOM === 'undefined') return;
+                const root = ReactDOM.createRoot(rootEl);
+                root.render(e(RecipeWidget));
+            });
+        })();
+    </script>
     
     <!-- Page-specific JavaScript -->
     {% block extra_js %}{% endblock %}
